@@ -9,12 +9,14 @@ void printDetail(uint8_t type, int value);
 int pinPlay = 2;
 int pinVolumeUp = 3;
 int pinVolumeDown = 4;
+int pinIsPlayingOut = 12;
 int songCount = 0;
 
 void setup() {
-  pinMode(2, INPUT);  // Play
-  pinMode(3, INPUT);  // Volume up
-  pinMode(4, INPUT);  // Volum down 
+  pinMode(pinPlay, INPUT);  // Play
+  pinMode(pinVolumeUp, INPUT);  // Volume up
+  pinMode(pinVolumeDown, INPUT);  // Volum down 
+  pinMode(pinIsPlayingOut, INPUT);  // Playing Status, Low means playing/High means no
   playerSerial.begin(9600);
   Serial.begin(9600);
 
@@ -43,8 +45,19 @@ void setup() {
 }
 
 unsigned long lastPlayTime = 0;
-bool isPlayButtonPushed = false;
 const unsigned long WaitNextPlayTime = 10000; // 10 seconds wait
+bool isPlayButtonPushed = false;
+bool isPlaying = false;
+bool notPlaying = true; // the state of realtime pinIsPlayingOut
+
+
+// plays the next random song among all songs.
+void playNext() {
+  int num = random(songCount);
+  Serial.print(F("Play "));
+  Serial.println(num);
+  dfPlayer.playMp3Folder(num);
+}
 
 void loop() {
   if (digitalRead(pinVolumeUp) == HIGH) {
@@ -63,14 +76,24 @@ void loop() {
   } else if(isPlayButtonPushed) {
     Serial.println(F("Release Play Button"));
     if (millis() - lastPlayTime >= WaitNextPlayTime || lastPlayTime == 0) {
-      int num = random(songCount);
-      Serial.print(F("Play "));
-      Serial.println(num);
-      dfPlayer.playMp3Folder(num);
+      playNext();
+
       lastPlayTime = millis();
       Serial.print(F("Time: "));
       Serial.println(lastPlayTime);
     }
     isPlayButtonPushed = false;
   }
+
+  // check isPlaying
+  notPlaying = digitalRead(pinIsPlayingOut);
+  if (notPlaying == true && isPlaying == true) {
+    isPlaying = false;
+    Serial.println(F("Playing OFF"));
+  } else if(notPlaying == false && isPlaying == false) {
+    isPlaying = true;
+    Serial.println(F("Playing ON"));
+  }
+
+  delay(1);
 }
