@@ -33,13 +33,18 @@ void setup() {
 
   dfPlayer.setTimeOut(500); // set serial network timeout
 
-  dfPlayer.volume(10);  // set default volume. From 0 to 30
+  dfPlayer.volume(20);  // set default volume. From 0 to 30
+
+  randomSeed(analogRead(0));
 
   songCount = dfPlayer.readFileCounts();
   Serial.print(F("songCount: "));
   Serial.println(songCount);
-  randomSeed(analogRead(0));
 }
+
+unsigned long lastPlayTime = 0;
+bool isPlayButtonPushed = false;
+const unsigned long WaitNextPlayTime = 10000; // 10 seconds wait
 
 void loop() {
   if (digitalRead(pinVolumeUp) == HIGH) {
@@ -52,10 +57,20 @@ void loop() {
   }
 
   if (digitalRead(pinPlay) == HIGH) {
-    int num = random(songCount);
-    Serial.print(F("Play "));
-    Serial.println(num);
-    dfPlayer.playMp3Folder(num);
-    delay(200); 
+    if (!isPlayButtonPushed) {
+      isPlayButtonPushed = true;
+    }
+  } else if(isPlayButtonPushed) {
+    Serial.println(F("Release Play Button"));
+    if (millis() - lastPlayTime >= WaitNextPlayTime || lastPlayTime == 0) {
+      int num = random(songCount);
+      Serial.print(F("Play "));
+      Serial.println(num);
+      dfPlayer.playMp3Folder(num);
+      lastPlayTime = millis();
+      Serial.print(F("Time: "));
+      Serial.println(lastPlayTime);
+    }
+    isPlayButtonPushed = false;
   }
 }
