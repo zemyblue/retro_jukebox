@@ -3,4 +3,4 @@ Arduino Retro Jukebox
 
 
 ## circuit
-./docs/retro_jukebox.png
+![Circuilt](docs/retro_jukebox.png)
