@@ -111,19 +111,18 @@ void loop() {
   // if Volume up button is pushed
   if (digitalRead(pinVolumeUp) == HIGH) {
     dfPlayer.volumeUp();
-    Serial.println(F("Volume Up"));
+    // Serial.println(F("Volume Up"));
   }
   // if Volume down button is pushed
   if (digitalRead(pinVolumeDown) == HIGH) { 
     dfPlayer.volumeDown();
-    Serial.println(F("Volume Down"));
+    // Serial.println(F("Volume Down"));
   }
 
   // if Play button is pushed
   if (digitalRead(pinPlay) == HIGH) {
     if (!isPlayButtonPushed) {
       isPlayButtonPushed = true;
-      setPlayingState();
     }
   } else if(isPlayButtonPushed) {
     Serial.println(F("Release Play Button"));
@@ -135,7 +134,6 @@ void loop() {
       Serial.println(lastPlayTime);
     }
     isPlayButtonPushed = false;
-    setWaitState();
   }
 
   // check isPlaying and change led state
