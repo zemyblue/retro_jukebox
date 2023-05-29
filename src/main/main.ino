@@ -39,7 +39,9 @@ void setPlayingAndEnableChangeState() {
   if (playingStateBlue >= 80 || playingStateBlue <= 0) {
     playingStateBlueDirection = playingStateBlueDirection * -1;
   }
-  setColor(255, 255, playingStateBlue);
+  // Serial.print(F("playingStateBlue: "));
+  // Serial.println(playingStateBlue);
+  // setColor(255, 255, playingStateBlue);
 }
 
 void setPlayingState() {
