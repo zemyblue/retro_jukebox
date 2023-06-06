@@ -60,10 +60,30 @@ bool isPlayButtonPushed = false;
 bool isPlaying = false;
 bool notPlaying = true; // the state of realtime pinIsPlayingOut
 
+const int CacheSize = 10;
+int songCache[CacheSize] = {0,};
+int playCount = 0;
 
 // plays the next random song among all songs.
 void playNext() {
-  int num = random(songCount);
+  int num = 0;
+
+  // Make sure last "CacheSize" songs doesn't overlapped.
+  do {
+    num = random(songCount) + 1;
+    int i = 0;
+    int cacheSize = songCount > CacheSize ? CacheSize : songCount;
+    for (; i < cacheSize; i++) {
+      if (songCache[i] == num) {
+        break;
+      }
+    }
+    if (i == cacheSize) {
+      songCache[playCount++ % cacheSize] = num;
+      break;
+    }
+  } while (true);
+  
   Serial.print(F("Play "));
   Serial.println(num);
   dfPlayer.playMp3Folder(num);
