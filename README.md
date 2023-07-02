@@ -1,4 +1,4 @@
-# retro_jukebox
+# Retro Jukebox
 Arduino Retro Jukebox
 
 
